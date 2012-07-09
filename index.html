@@ -1,1 +1,142 @@
-Hello, world!
+<html>
+    <head>
+        <style type="text/css">
+            body {
+                width: auto;
+                margin: 0px;
+                padding: 0px;
+                color: #2D506B;
+                font: normal 12px verdana, sans-serif;
+                line-height: 1.6em;
+                background-color: white;
+            }
+            div.main {
+                background-color: #CFF0F8;
+                width: 600px;
+                margin: 3em auto;
+                padding: 30px 40px;
+                border-radius: 20px;
+                box-shadow: 1px 1px 40px black;
+            }
+            
+            div.main p {
+                margin: 1em;
+            }
+            
+            article {
+                margin: 1em 2em;
+                padding: 1em 2em;
+                background-color: #CFF0F8;
+                border: 1px solid #A8C1C9;
+                border-radius: 10px;
+            }
+            
+            article.fade {
+                margin: 3em 2em 5em 2em;
+            }
+            
+            pre.bnf {
+                /*background-color: #CFF0F8;
+                margin: 1em 2em;
+                padding: 1em 1em;
+                border: 1px solid #A8C1C9;
+                border-radius: 10px;*/
+                padding: 1em 2em;
+                margin: 1em 2em;
+                color: magenta;
+                font-weight: bold;
+            }
+            
+            pre.bnf .symbol {
+                color: green;
+                font-weight: normal;
+            }
+            pre.bnf .assign {
+                color: gray;
+            }
+            pre.bnf .desc {
+                font-style: italic;
+                color: blue;
+                font-weight: normal;
+            }
+            pre.bnf .string {
+                color: red;
+            }
+            pre.bnf .optional {
+                font-style: italic;
+            }
+            pre.bnf .group {
+            }
+            pre.bnf .op {
+                color: orange;
+            }
+            
+            a {
+                color: #0AA8E9;
+                text-decoration: none;
+            }
+            a:hover {
+                color: #990000;
+            }
+            
+            ul {
+                list-style: none;
+                padding-left: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main">
+            <h1>dAmn Packet Syntax</h1>
+            <p>
+                <a href="http://deviantart.com">deviantART</a>'s chat (dAmn)
+                use a text-based protocol. The packets in this protocol follow
+                a particular format. As such, it seemed appropriate for someone
+                to define the grammar used by dAmn packets. No grammar is openly
+                provided by deviantART, but the protocol is largely documented
+                by the #<a href="http://botlab.deviantart.com">Botdom</a> group,
+                which is a group of third-party developers, of which I am a member.
+                The documentation we have on the protocol can be found
+                <a href="http://botdom.com/documentation/dAmn">on our wiki</a>.
+            </p><p>
+                Enough rambling. Below you can see the grammar I have written.
+            </p>
+            <pre class="bnf"><code><span class="symbol">key</span> <span class="assign"><span class="op">::</span>=</span> <span class="desc">&lt;any character excluding argument_separator, whitespace, and null&gt;</span>*
+<span class="symbol">value</span> <span class="assign"><span class="op">::</span>=</span> <span class="desc">&lt;any character excluding newlines and null&gt;</span>*
+<span class="symbol">body</span> <span class="assign"><span class="op">::</span>=</span> <span class="desc">&lt;([^\0])&gt;</span>*
+<span class="symbol">command</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">key</span>
+<span class="symbol">parameter</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">value</span>
+
+<span class="symbol">cmdline</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">command</span> <span class="optional">[ <span class="string">" "</span> <span class="symbol">parameter</span> ]</span> <span class="string">"\n"</span>
+<span class="symbol">argument_separator</span> <span class="assign"><span class="op">::</span>=</span> <span class="string">"="</span> <span class="op">|</span> <span class="string">":"</span>
+<span class="symbol">argument</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">key argument_separator value</span> <span class="string">"\n"</span>
+<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>* <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="group">( <span class="string">"\n"</span> <span class="symbol">body</span> <span class="op">|</span> <span class="string">""</span> )</span> <span class="string">"\0"</span></code></pre>
+            <p>
+                While the grammar above defines the syntax of a dAmn packet
+                sufficiently, it doesn't reveal too much about how the protocol
+                actually works. The body of the packet can and often does
+                contain one or more sub-packets. These can be treated the
+                same way as normal packets if parsers handle packets according
+                to the grammar above. But there are some things to consider
+                about packets, sub-packets, and how they differ.
+            </p><p>
+                All packets that are not sub-packets will always at least
+                have a command. Sub-packets do not always have commands. As
+                such, definition <code>packet</code> symbol above would
+                work best as a definition for a sub-packet.
+            </p><p>
+                Whatever the packet looks like, if it has a body, the packet
+                header (command line and arguments) and body are separated
+                with two newline characters <code>(\n\n)</code>. Below is an
+                attempt at accounting for the oddities in the packet syntax.
+            </p>
+            <pre class="bnf"><code><span class="symbol">sub_packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>* <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="group">( <span class="string">"\n"</span> <span class="symbol">body</span> <span class="op">|</span> <span class="string">""</span> )
+<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">cmdline</span> <span class="optional">[ <span class="symbol">argument</span>* ]</span> <span class="string">"\n"</span> <span class="group">( <!--<span class="symbol">sup_packet</span> <span class="op">|</span> --><span class="symbol">body</span> <span class="op">|</span> <span class="string">""</span> ) <span class="string">"\0"</span></code></pre>
+            <p>
+                Even though I haven't defined it in the stuff above, the
+                sub-packet body can be another sub-packet. And so on and so
+                forth. That should be pretty obvious, though.
+            </p>
+        </div>
+    </body>
+</html>
