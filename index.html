@@ -93,7 +93,7 @@
 <span class="symbol">cmdline</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">command</span> <span class="optional">[ <span class="string">" "</span> <span class="symbol">parameter</span> ]</span> <span class="string">"\n"</span>
 <span class="symbol">argument_separator</span> <span class="assign"><span class="op">::</span>=</span> <span class="string">"="</span> <span class="op">|</span> <span class="string">":"</span>
 <span class="symbol">argument</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">key argument_separator value</span> <span class="string">"\n"</span>
-<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>* <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="group">( <span class="string">"\n"</span> <span class="symbol">body</span> <span class="op">|</span> <span class="string">""</span> )</span> <span class="string">"\0"</span></code></pre>
+<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>* <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="optional">[ <span class="string">"\n"</span> <span class="symbol">body</span> ]</span> <span class="string">"\0"</span></code></pre>
             <p>
                 While the grammar above defines the syntax of a dAmn packet
                 sufficiently, it doesn't reveal too much about how the protocol
@@ -113,8 +113,8 @@
                 with two newline characters <code>(\n\n)</code>. Below is an
                 attempt at accounting for the oddities in the packet syntax.
             </p>
-            <pre class="bnf"><code><span class="symbol">sub_packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>* <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="group">( <span class="string">"\n"</span> <span class="symbol">body</span> <span class="op">|</span> <span class="string">""</span> )
-<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">cmdline</span> <span class="optional">[ <span class="symbol">argument</span>* ]</span> <span class="string">"\n"</span> <span class="group">( <!--<span class="symbol">sup_packet</span> <span class="op">|</span> --><span class="symbol">body</span> <span class="op">|</span> <span class="string">""</span> ) <span class="string">"\0"</span></code></pre>
+            <pre class="bnf"><code><span class="symbol">sub_packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>* <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="optional">[ <span class="string">"\n"</span> <span class="symbol">body</span> ]</span>
+<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">cmdline</span> <span class="optional">[ <span class="symbol">argument</span>* ]</span> <span class="string">"\n"</span> <span class="optional">[ <!--<span class="symbol">sup_packet</span> <span class="op">|</span> --><span class="symbol">body</span> ]</span> <span class="string">"\0"</span></code></pre>
             <p>
                 Even though I haven't defined it in the stuff above, the
                 sub-packet body can be another sub-packet. And so on and so
