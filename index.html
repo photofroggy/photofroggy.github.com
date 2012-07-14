@@ -114,11 +114,49 @@
                 attempt at accounting for the oddities in the packet syntax.
             </p>
             <pre class="bnf"><code><span class="symbol">sub_packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="group">( <span class="optional">[ <span class="symbol">cmdline</span> ]</span> <span class="symbol">argument</span>+ <span class="op">|</span> <span class="symbol">cmdline</span> )</span> <span class="optional">[ <span class="string">"\n"</span> <span class="symbol">body</span> ]</span>
-<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">cmdline</span> <span class="symbol">argument</span>* <span class="string">"\n"</span> <span class="optional">[ <!--<span class="symbol">sup_packet</span> <span class="op">|</span> --><span class="symbol">body</span> ]</span> <span class="string">"\0"</span></code></pre>
+<span class="symbol">packet</span> <span class="assign"><span class="op">::</span>=</span> <span class="symbol">cmdline argument</span>* <span class="string">"\n"</span> <span class="optional">[ <!--<span class="symbol">sup_packet</span> <span class="op">|</span> --><span class="symbol">body</span> ]</span> <span class="string">"\0"</span></code></pre>
             <p>
                 Even though I haven't defined it in the stuff above, the
                 sub-packet body can be another sub-packet. And so on and so
                 forth. That should be pretty obvious, though.
+            </p>
+            <h1>Tablumps</h1>
+            <p>
+                When sending messages across deviantART's chatrooms, users can send
+                various HTML elements, as well as special tags specific to the chat
+                server. When sending these elements in a message, the chat server
+                will parse these elements out of the message, and if they are valid,
+                they will be replaced with a formatted string representing the
+                element in plain text.
+            </p><p>
+                We refer to these formatted strings as "tablumps", as they are
+                typically a set of arguments separated by tab characters
+                <code>(\t)</code>. The syntax for tablumps is pretty simple in
+                comparison to the packet syntax, and is sufficiently described
+                by the grammar below.
+            </p>
+            <pre class="bnf"><code><span class="symbol">separator</span> <span class="assign"><span class="op">::</span>=</span> <span class="string">"\t"</span>
+<span class="symbol">argument</span> <span class="assign"><span class="op">::</span>=</span> <span class="desc">&lt;([^&\t])&gt;</span>* <span class="symbol">separator</span>
+<span class="symbol">tablump</span> <span class="assign"><span class="op">::</span>=</span> <span class="string">"&"</span> <span class="symbol">argument</span> <span class="group">( <span class="symbol">argument</span> )</span>* <span class="optional">[ <span class="string">"&"</span> <span class="symbol">separator</span> ]</span></code></pre>
+            <p>
+                It should be noted that most tablumps have a fixed number of arguments.
+                Tablumps of variable length appear to be the only tablumps that end with
+                <code>&\t</code>. This can be viewed as an empty tablump, as it begins
+                with <code>&</code>, ends with <code>\t</code>, but has no content. This
+                would be fitting with the rest of the tablumps, but when considered part
+                of the tablump, it could be thought to denote the tablump as being self-closing.
+            </p><p>
+                Evidence to support that the ending <code>&\t</code> is actually
+                a separate tablump would be the fact that some of the HTML elements
+                mapped to tablumps do not close themselves, and usually have an
+                accompanying tablump that closes the element. For instance, the
+                tablump for a hyperlink starts with <code>&a\t</code>, but the
+                closing tab is formatted as a separate tablump, <code>&/a\t</code>.
+            </p><p>
+                Note that most tablump parsers treat a the closing <code>&\t</code>
+                as part of the same tablump, rather than a separate tablump, partly
+                because it is useful when determining the end of variable length
+                tablumps.
             </p>
         </div>
     </body>
