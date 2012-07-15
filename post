@@ -1,0 +1,73 @@
+#!/usr/bin/python
+import os
+import sys
+import json
+import os.path
+from datetime import date
+
+
+month = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ]
+
+
+def say(msg):
+    sys.stdout.write('>> ' + msg + '\n')
+    sys.stdout.flush()
+
+
+def get_dir():
+    f = open('blog/entries.json', 'r')
+    d = f.read()
+    f.close()
+    return json.loads(d)
+
+
+def set_dir(dir):
+    f = open('blog/entries.json', 'w')
+    f.write(json.dumps(dir))
+    f.close()
+
+
+def make_post():
+    given = len( sys.argv )
+    
+    if given < 2:
+        say('Provide a title for your post.')
+        return
+    
+    title = sys.argv[1]
+    fname = title.replace(' ', '_')
+    
+    if given >= 3:
+        fname = sys.argv[2]
+    
+    say('Post title: ' + title)
+    say('Opening index...')
+    dir = get_dir()
+    stamp = date.today()
+    m = month[stamp.month - 1]
+    y = str(stamp.year)
+    fold = 'blog/' + y + '/' + m
+    fpath = fold + '/' + fname + '.html'
+    
+    dir.insert( 0, { 'href': fpath[5:], 'title': title } )
+    set_dir(dir)
+    say('Post added to index!')
+    
+    if not os.path.exists( 'blog/' + y ):
+        os.path.mkdir( 'blog/' + y, 0o755 )
+    
+    if not os.path.exists( fold ):
+        os.path.mkdir( fold, 0o755 )
+    
+    tf = open( 'blog/template.html', 'r' )
+    templ = tf.read()
+    tf.close()
+    
+    newpost = open( fpath, 'w' )
+    newpost.write( templ )
+    newpost.close()
+    
+    say('Created post template at ' + fpath)
+
+
+make_post()

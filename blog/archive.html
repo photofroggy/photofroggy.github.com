@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script type="text/javascript">
+            (function( $ ) {
+            
+                $.ajax('entries.json').complete( function( e ) {
+                    if( e.status != 200 )
+                        return;
+                    
+                    data = JSON.parse(e.responseText);
+                    
+                    for( index in data ) {
+                        entry = data[index];
+                        $('.dir').append('<li><a href="' + entry['href'] + '">' + entry['title'] + '</a></li>');
+                    }
+                } );
+            
+            })( jQuery );
+        </script>
+    </head>
+    <body>
+        <div class="main">
+            <h1>Archive</h1>
+            <p>
+                All past blog posts can be found below.
+            </p>
+            <ul class="dir">
+            </ul>
+        </div>
+    </body>
+</html>
