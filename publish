@@ -1,5 +1,5 @@
 
 ./bubble
 git add *
-git commit -a -m "pushing blog post"
-git push origin master
+git commit -q -a -m "pushing blog post"
+git push -q origin master
