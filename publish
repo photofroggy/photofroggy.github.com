@@ -1,35 +1,5 @@
-#!/usr/bin/python
-import os
-import sys
-import json
-import os.path
 
-
-def say(msg):
-    sys.stdout.write('>> ' + msg + '\n')
-    sys.stdout.flush()
-
-
-def get_dir():
-    f = open('blog/entries.json', 'r')
-    d = f.read()
-    f.close()
-    return json.loads(d)
-
-
-def publish():
-    say('Publishing latest post...')
-    posti = get_dir()[0]
-    
-    pfile = open('blog/' + posti['href'], 'r')
-    post = pfile.read()
-    pfile.close()
-    
-    pfile = open('blog/index.html', 'w')
-    pfile.write(post.replace('../../', ''))
-    pfile.close()
-    
-    say('Published post "' + posti['title'] + '"!')
-
-
-publish()
+./publish
+git add *
+git commit -a -m "pushing blog post"
+git push origin master

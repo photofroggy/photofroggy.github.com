@@ -5,6 +5,10 @@ import json
 import os.path
 from datetime import date
 
+""" Create a new blog post using the template in ./template.html.
+    The template is written with the given post title, and the
+    current date.
+"""
 
 month = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december' ]
 
