@@ -17,11 +17,12 @@ div.main {
     box-shadow: 1px 1px 40px black;
 }
 
-h1 span.ts {
+h1 span {
     display: block;
     color: #E29A78;
     font-size: 9px;
     padding-left: 20px;
+    margin-bottom: -5px;
 }
 
 div.main p {

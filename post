@@ -41,30 +41,55 @@ def make_post():
         fname = sys.argv[2]
     
     say('Post title: ' + title)
-    say('Opening index...')
-    dir = get_dir()
+    
+    # Timestamp stuff.
     stamp = date.today()
     m = month[stamp.month - 1]
+    dayn = stamp.day
+    days = str( dayn )
+    dlast = int( days[-1] )
+    day = ''
     y = str(stamp.year)
+    
+    # Figure out whether the day is the n-st, n-nd, n-rd or n-th of the mnth.
+    if dayn >= 10 and dayn <= 20:
+        day = days + 'th'
+    else:
+        if dlast == 1:
+            day = days + 'st'
+        if dlast == 2:
+            day = days + 'nd'
+        if dlast == 3:
+            day = days + 'rd'
+        if dlast > 3:
+            day = days + 'th'
+    
+    # file path stuff.
     fold = 'blog/' + y + '/' + m
     fpath = fold + '/' + fname + '.html'
     
+    # Add the post to the archive list
+    say('Opening index...')
+    dir = get_dir()
     dir.insert( 0, { 'href': fpath[5:], 'title': title } )
     set_dir(dir)
     say('Post added to index!')
     
+    # Make sure the folder exists.
     if not os.path.exists( 'blog/' + y ):
         os.path.mkdir( 'blog/' + y, 0o755 )
     
     if not os.path.exists( fold ):
         os.path.mkdir( fold, 0o755 )
     
+    # Read template
     tf = open( 'blog/template.html', 'r' )
     templ = tf.read()
     tf.close()
     
+    # Save template.
     newpost = open( fpath, 'w' )
-    newpost.write( templ )
+    newpost.write( templ.format( title, '{0} {1}, {2}'.format( day, m.title(), y ) ) )
     newpost.close()
     
     say('Created post template at ' + fpath)
