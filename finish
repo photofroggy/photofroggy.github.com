@@ -1,5 +1,0 @@
-#!/usr/bin/bash
-./publish
-git add *
-git commit -a -m "pushing blog post"
-git push origin master
