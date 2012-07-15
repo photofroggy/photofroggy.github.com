@@ -70,7 +70,7 @@ def make_post():
     
     # file path stuff.
     fold = 'blog/' + y + '/' + m
-    fpath = fold + '/' + fname + '.html'
+    fpath = (fold + '/' + fname + '.html').lower()
     
     # Add the post to the archive list
     say('Opening index...')

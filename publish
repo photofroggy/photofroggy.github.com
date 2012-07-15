@@ -1,5 +1,6 @@
 
 ./bubble
-git add *
+git add blog/*
 git commit -q -a -m "pushing blog post"
 git push -q origin master
+./tweet
