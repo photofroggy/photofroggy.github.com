@@ -1,0 +1,15 @@
+#!/usr/bin/python
+# Custom shite.
+from blog import say, Archive
+
+""" List the archive.
+    Shows post titles and ids.
+    Makes it so you don't have to guess indexes or whatever.
+"""
+
+say('Current posts:')
+arch = Archive()
+
+for index, post in enumerate(arch.items):
+    say( '  {0} - {1}'.format( index, post['title'] ) )
+

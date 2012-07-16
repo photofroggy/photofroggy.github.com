@@ -1,39 +1,15 @@
 #!/usr/bin/python
-import os
-import sys
-import json
-import os.path
+from blog import say, Archive
 
 """ Move the most recent blog entry in
     the archive to the index page of
     the blog.
 """
 
-def say(msg):
-    sys.stdout.write('>> ' + msg + '\n')
-    sys.stdout.flush()
 
+arch = Archive()
+arch.publish()
+post = arch.get()
 
-def get_dir():
-    f = open('blog/entries.json', 'r')
-    d = f.read()
-    f.close()
-    return json.loads(d)
+say('Front page changed to post "' + post['title'] + '"!')
 
-
-def publish():
-    say('Publishing latest post...')
-    posti = get_dir()[0]
-    
-    pfile = open('blog/' + posti['href'], 'r')
-    post = pfile.read()
-    pfile.close()
-    
-    pfile = open('blog/index.html', 'w')
-    pfile.write(post.replace('../../', ''))
-    pfile.close()
-    
-    say('Published post "' + posti['title'] + '"!')
-
-
-publish()
