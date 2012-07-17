@@ -1,7 +1,4 @@
 
 ./bubble
-echo ">> Pushing to github..."
-git add blog/*
-git commit -q -a -m "pushing blog post"
-git push -q origin master
+./push
 ./tweet
